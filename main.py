@@ -44,10 +44,12 @@ def record_blood_pressure():
     data = request.get_json()
     systolic = data.get("systolic")
     diastolic = data.get("diastolic")
-    heart_rate = data.get("heartRate")
+    heart_rate = data.get("heart_rate")
 
     if systolic is None or diastolic is None or heart_rate is None:
-        return jsonify({"error": "Missing required fields"}), 400
+        return jsonify({"error": f"Missing required fields, got {systolic} for "
+                                 f"systolic, {diastolic} for diastolic, "
+                                 f"{heart_rate} for heart rate"}), 400
 
     timestamp = datetime.now(timezone.utc)
 
