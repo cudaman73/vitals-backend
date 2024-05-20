@@ -4,7 +4,6 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime, timezone, timedelta
 from functools import wraps
-from bson.objectid import ObjectId
 import dotenv
 
 dotenv.load_dotenv()
