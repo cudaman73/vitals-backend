@@ -41,7 +41,7 @@ def is_valid_api_key(api_key):
 
 @app.route("/blood-pressure", methods=["POST"])
 @require_api_key
-def record_blood_pressure():
+def record_blood_pressure(api_key):
     data = request.get_json()
     systolic = data.get("systolic")
     diastolic = data.get("diastolic")
@@ -72,7 +72,7 @@ def record_blood_pressure():
 
 @app.route("/weight", methods=["POST"])
 @require_api_key
-def record_weight():
+def record_weight(api_key):
     data = request.get_json()
     weight = data.get("weight")
 
@@ -95,7 +95,7 @@ def record_weight():
 
 @app.route("/blood-pressure", methods=["GET"])
 @require_api_key
-def get_blood_pressure_data():
+def get_blood_pressure_data(api_key):
     try:
         data = list(blood_pressure_collection.find())
         for doc in data:
@@ -107,7 +107,7 @@ def get_blood_pressure_data():
 
 @app.route("/weight", methods=["GET"])
 @require_api_key
-def get_weight_data():
+def get_weight_data(api_key):
     try:
         data = list(weight_collection.find())
         for doc in data:
