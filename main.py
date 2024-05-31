@@ -124,13 +124,18 @@ def record_expense(user_key):
     description = data.get("description")
     amount = data.get("amount")
 
-    if description is None or amount is None:
-        return jsonify({"error": "Missing required fields"}), 400
+    if description is None:
+        return jsonify({"error": "Missing required field: description"}), 400
+    if amount is None:
+        return jsonify({"error": "Missing required field: amount"}), 400
 
-    try:
-        amount = float(amount)
-    except ValueError:
-        return jsonify({"error": "Invalid amount"}), 400
+    # Validate the amount format
+    if not isinstance(amount, (float, int)):
+        return jsonify({"error": "Amount must be a number."}), 400
+
+    # Convert integer amount to float with two decimal places
+    if isinstance(amount, int):
+        amount = float(f"{amount:.2f}")
 
     expense = {
         "user": user_key,
@@ -149,18 +154,18 @@ def record_expense(user_key):
 @app.route("/expenses/current-week", methods=["GET"])
 @require_api_key
 def get_current_week_expenses(user_key):
-    today = datetime.utcnow().date()
-    days_since_thursday = (today.weekday() - 3) % 7
-    start_of_week = today - timedelta(days=days_since_thursday)
-    end_of_week = start_of_week + timedelta(days=6)
+    # today = datetime.utcnow().date()
+    # days_since_thursday = (today.weekday() - 3) % 7
+    # start_of_week = today - timedelta(days=days_since_thursday)
+    # end_of_week = start_of_week + timedelta(days=6)
 
     try:
         expenses = list(expenses_collection.find({
             "user": user_key,
-            "date": {
-                "$gte": start_of_week.strftime("%Y-%m-%d"),
-                "$lte": end_of_week.strftime("%Y-%m-%d")
-            }
+            # "date": {
+            #     "$gte": start_of_week.strftime("%Y-%m-%d"),
+            #     "$lte": end_of_week.strftime("%Y-%m-%d")
+            # }
         }))
         total_expenses = sum(expense["amount"] for expense in expenses)
 
@@ -169,15 +174,6 @@ def get_current_week_expenses(user_key):
         remaining_budget = budget - total_expenses
 
         return jsonify({
-            "expenses": [
-                {
-                    "user": expense["user"],
-                    "description": expense["description"],
-                    "amount": expense["amount"],
-                    "date": expense["date"]
-                }
-                for expense in expenses
-            ],
             "total_expenses": total_expenses,
             "budget": budget,
             "remaining_budget": remaining_budget
