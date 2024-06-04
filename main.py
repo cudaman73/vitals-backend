@@ -133,9 +133,7 @@ def record_expense(user_key):
     if not isinstance(amount, (float, int)):
         return jsonify({"error": "Amount must be a number."}), 400
 
-    # Convert integer amount to float with two decimal places
-    if isinstance(amount, int):
-        amount = float(f"{amount:.2f}")
+    amount = float(amount)
 
     expense = {
         "user": user_key,
@@ -176,7 +174,7 @@ def get_current_week_expenses(user_key):
         return jsonify({
             "total_expenses": total_expenses,
             "budget": budget,
-            "remaining_budget": remaining_budget
+            "remaining_budget": round(remaining_budget, 2)
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
